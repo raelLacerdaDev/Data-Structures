@@ -2,27 +2,25 @@ package tree
 
 fun main() {
 
-    val tree = GenericTree<String>()
+    val tree = GenericTree<Char>()
+    val root = tree.addRoot('M')
+    val a = tree.add('A', root)
+    val u = tree.add('U', root)
+    val c = tree.add('C', root)
+    tree.add('H', a)
+    tree.add('T', a)
+    tree.add('E', u)
+    tree.add('J', u)
+    val b = tree.add('B', c)
+    tree.add('W', c)
+    tree.add('K', c)
+    tree.add('N', b)
+    tree.add('L', b)
 
-    val pRoot = tree.addRoot("bem vindo!")
-    tree.add("Quem sou eu?", pRoot)
-    tree.add("para quem e este curso?", pRoot)
-    tree.add("O que esperar?", pRoot)
+  tree.bfs {
+     print(it.element)
+     print(" ")
+  }
 
-    tree.postOrder {
-        println(it.element)
-    }
-
-    val elements = tree.elements()
-    println(elements)
-
-    val target = tree.find("O que esperar?")
-    println(target?.element)
-    println(target is Position<*>)
-
-
-    val target2 = tree.find("alalalall blblab,slblkbkflb")
-    println(target2?.element)
-    println(target2 is Position<*>)
 
 }

@@ -1,5 +1,7 @@
 package tree
 
+import queue.Queue
+
 class GenericTree<T> {
 
     private var _root: Node<T>? = null
@@ -81,9 +83,11 @@ class GenericTree<T> {
         return null
     }
 
+    fun printTree() {
+        printRecursive(_root ?: throw NoSuchElementException("Empty tree!"), 0)
+    }
 
-
-    fun printRecursive(node: Position<T>, depth: Int = 0) {
+    private fun printRecursive(node: Position<T>, depth: Int = 0) {
         val spaces = "    ".repeat(depth)
         println("$spaces${node.element}")
         val children = children(node)
@@ -113,5 +117,61 @@ class GenericTree<T> {
         callAction(node)
     }
 
+    fun isExternal(p: Position<T>): Boolean {
+        val node = validatePosition(p)
+        return node.children.isEmpty()
+    }
 
+    fun isRoot(p: Position<T>): Boolean {
+        val node = validatePosition(p)
+        return node == _root
+    }
+
+    fun parent(p: Position<T>): Position<T>? {
+        val node = validatePosition(p)
+        return node.parent
+    }
+
+    fun replace(target: Position<T>, element: T) : Position<T> {
+        val node = validatePosition(target)
+        node.element = element
+        return node
+    }
+
+    fun remove(p: Position<T>) {
+        val node = validatePosition(p)
+        if (node == _root) {
+            _root = null
+            size = 0
+            return
+        }
+        val parent = node.parent
+        var count = 0
+        preOrderRecursive(node) {
+            count++
+            markAsRemoved(it)
+        }
+        parent?.children?.remove(node)
+        size -= count
+    }
+
+    private fun markAsRemoved (p: Position<T>) {
+        val  node = validatePosition(p)
+        node.parent = node
+    }
+
+    fun bfs(callAction: (Position<T>) -> Unit) {
+        if (_root == null) {
+            throw IllegalStateException("Tree is empty!")
+        }
+        val queue = Queue<Position<T>>()
+        queue.add(_root ?: throw IllegalArgumentException("Root is null!"))
+        while (queue.size > 0) {
+            val position = queue.remove()
+            callAction(position?.value ?: continue)
+            for (child in children(position.value)) {
+                queue.add(child)
+            }
+        }
+    }
 }
